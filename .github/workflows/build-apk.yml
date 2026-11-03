@@ -36,8 +36,19 @@ jobs:
           mkdir -p www
           cp index.html www/index.html
 
-      - name: Add Android platform
+            - name: Add Android platform
         run: npx cap add android
+
+      - name: Fix Kotlin duplicate dependencies
+        run: |
+          cat >> android/build.gradle <<'EOF'
+          allprojects {
+              configurations.all {
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+              }
+          }
+          EOF
 
       - name: Build APK
         run: |
