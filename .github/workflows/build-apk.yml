@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -5,6 +6,9 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -17,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -25,18 +29,15 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Install Capacitor
-        run: |
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-
       - name: Create Capacitor project
         run: |
           npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init "My Expense Assistant" "com.bleeehp.expenseassistant" --web-dir=www
           mkdir -p www
           cp index.html www/index.html
 
-            - name: Add Android platform
+      - name: Add Android platform
         run: npx cap add android
 
       - name: Fix Kotlin duplicate dependencies
