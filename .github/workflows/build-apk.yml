@@ -1,5 +1,5 @@
 
-name: Build Android APK
+name: Build Rollymar Expenses APK
 
 on:
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "My Expense Assistant" "com.bleeehp.expenseassistant" --web-dir=www
+          npx cap init "Rollymar Expenses" "com.bleeehp.expenseassistant" --web-dir=www
           mkdir -p www
           cp index.html www/index.html
 
@@ -57,8 +57,12 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      - name: Rename APK
+        run: |
+          mv android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/Rollymar-Expenses.apk
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: My-Expense-Assistant-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: Rollymar-Expenses-APK
+          path: android/app/build/outputs/apk/debug/Rollymar-Expenses.apk
