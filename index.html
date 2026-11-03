@@ -1,1 +1,119 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Expense Assistant</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f5f2;
+  padding: 20px;
+}
+.container {
+  max-width: 450px;
+  margin: auto;
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+h2 { color: #16834a; }
+input, select, button {
+  width: 100%;
+  padding: 13px;
+  margin: 7px 0;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+button {
+  background: #16834a;
+  color: white;
+  border: none;
+}
+.balance {
+  font-size: 30px;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>My Expense Assistant</h2>
+
+<div class="card">
+<p>Total Balance</p>
+<div class="balance" id="balance">₱0.00</div>
+<p id="summary">Income: ₱0 | Expenses: ₱0</p>
+</div>
+
+<div class="card">
+<h3>Add Transaction</h3>
+<input id="description" placeholder="Description">
+<input id="amount" type="number" placeholder="Amount">
+<select id="type">
+<option value="expense">Expense</option>
+<option value="income">Income</option>
+</select>
+<button onclick="addTransaction()">Add</button>
+</div>
+
+<div class="card">
+<h3>History</h3>
+<ul id="history"></ul>
+</div>
+</div>
+
+<script>
+let transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+
+function addTransaction() {
+const description = document.getElementById("description").value.trim();
+const amount = Number(document.getElementById("amount").value);
+const type = document.getElementById("type").value;
+
+if (!description || !Number.isFinite(amount) || amount <= 0) {
+alert("Enter valid details");
+return;
+}
+
+transactions.push({description, amount, type});
+localStorage.setItem("transactions", JSON.stringify(transactions));
+document.getElementById("description").value = "";
+document.getElementById("amount").value = "";
+render();
+}
+
+function render() {
+let income = 0, expenses = 0;
+const history = document.getElementById("history");
+history.innerHTML = "";
+
+transactions.forEach((t, i) => {
+if (t.type === "income") income += t.amount;
+else expenses += t.amount;
+
+const li = document.createElement("li");
+li.textContent = `${t.description} - ${t.type === "income" ? "+" : "-"}₱${t.amount.toFixed(2)}`;
+
+const btn = document.createElement("button");
+btn.textContent = "Delete";
+btn.onclick = () => {
+transactions.splice(i, 1);
+localStorage.setItem("transactions", JSON.stringify(transactions));
+render();
+};
+li.appendChild(btn);
+history.appendChild(li);
+});
+
+document.getElementById("balance").textContent = "₱" + (income-expenses).toFixed(2);
+document.getElementById("summary").textContent = `Income: ₱${income} | Expenses: ₱${expenses}`;
+}
+render();
+</script>
+</body>
+</html>
